@@ -20,6 +20,7 @@ namespace ScreenSaver
         private SettingsForm settingsFrm = null;
         private bool shouldCache = false;
         private bool showVideo = true;
+        private KeyPressEventHandler keyPressEventHandler;
         private bool windowMode = false;
         private Rectangle providedBounds;
         private UniformRandomSelector selector = new UniformRandomSelector();
@@ -57,8 +58,10 @@ namespace ScreenSaver
             Location = new Point(-1, -1);
         }
 
-        public ScreenSaverForm(bool WindowMode = false) : this()
+        public ScreenSaverForm(KeyPressEventHandler keyPressEventHandler, bool WindowMode = false) : this()
         {
+            this.keyPressEventHandler = keyPressEventHandler;
+
             SetStyle(ControlStyles.SupportsTransparentBackColor, true);
             SetStyle(ControlStyles.Opaque, true);
             this.BackColor = Color.Transparent;
@@ -68,12 +71,13 @@ namespace ScreenSaver
             ShowButtons();
         }
 
-        public ScreenSaverForm(Rectangle Bounds, bool shouldCache, bool showVideo) : this()
+        public ScreenSaverForm(Rectangle Bounds, bool shouldCache, bool showVideo, KeyPressEventHandler keyPressEventHandler) : this()
         {
             this.providedBounds = Bounds;
             this.Bounds = Bounds;
             this.shouldCache = shouldCache;
             this.showVideo = showVideo;
+            this.keyPressEventHandler = keyPressEventHandler;
             //MessageBox.Show($"Bounds (ScreenSaverForm): {Bounds.Left}+{Bounds.Top}, {Bounds.Size.Width}x{Bounds.Size.Height}");
         }
 
@@ -109,7 +113,10 @@ namespace ScreenSaver
             if (!previewMode && keyData == Keys.Escape)
             {
                 //this.Close();
-                ShouldExit();
+                if (ShouldExit())
+                {
+                    DoExit();
+                }
                 return true;
             }
             return base.ProcessCmdKey(ref msg, keyData);
@@ -182,10 +189,7 @@ namespace ScreenSaver
 
         private void ScreenSaverForm_KeyPress(object sender, KeyPressEventArgs e)
         {
-            if (e.KeyChar == 'n')
-                SetNextVideo(true);
-            else
-                ShouldExit();
+            keyPressEventHandler(sender, e);
         }
         #endregion
 
@@ -211,9 +215,12 @@ namespace ScreenSaver
         private void ScreenSaverForm_MouseClick(object sender, MouseEventArgs e)
         {
             Trace.WriteLine("ScreenSaverForm_MouseClick()");
-            ShouldExit();
+            if (ShouldExit())
+            {
+                DoExit();
+            }
         }
-        
+
         private void btnClose_MouseMove(object sender, MouseEventArgs e)
         {
             Trace.WriteLine("btnClose_MouseMove()");
@@ -254,7 +261,10 @@ namespace ScreenSaver
                     //Terminate if mouse is moved a significant distance
                     if (Math.Abs(mouseLocation.X - e.X) > 5 ||
                         Math.Abs(mouseLocation.Y - e.Y) > 5)
-                        ShouldExit();
+                        if (ShouldExit())
+                        {
+                            DoExit();
+                        }
                 }
                 // Update current mouse location
                 mouseLocation = e.Location;
@@ -318,12 +328,12 @@ namespace ScreenSaver
             //MessageBox.Show($"Bounds (MaximizeVideo): {Bounds.Left}+{Bounds.Top}, {Bounds.Size.Width}x{Bounds.Size.Height}");
         }
 
-        private void SetNextVideo()
+        public void SetNextVideo()
         {
             SetNextVideo(false);
         }
 
-        private void SetNextVideo(bool force)
+        public void SetNextVideo(bool force)
         {
             Trace.WriteLine("SetNextVideo()");
             var cacheEnabled = new RegSettings().CacheVideos;
@@ -446,10 +456,17 @@ namespace ScreenSaver
         /// <summary>
         /// Exits if not in windowed or preview mode.
         /// </summary>
-        void ShouldExit()
+        public bool ShouldExit()
         {
-            if (!previewMode && !windowMode)
-                Application.Exit();
+            return !previewMode && !windowMode;
+        }
+
+        /// <summary>
+        /// Exits if not in windowed or preview mode.
+        /// </summary>
+        private void DoExit()
+        {
+            Application.Exit();
         }
 
         private void player_VlcLibDirectoryNeeded(object sender, Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs e)
