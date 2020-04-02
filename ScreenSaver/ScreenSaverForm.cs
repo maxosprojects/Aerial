@@ -25,6 +25,9 @@ namespace ScreenSaver
         private Rectangle providedBounds;
         private UniformRandomSelector selector = new UniformRandomSelector();
         private int repeated = 0;
+        private bool mainScreen;
+
+        public bool MainScreen { get => mainScreen; set => mainScreen = value; }
 
         public ScreenSaverForm()
         {

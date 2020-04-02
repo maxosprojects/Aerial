@@ -53,6 +53,7 @@ namespace Aerial
                 {
                     ScreenSaverForm form = new ScreenSaverForm(ScreenSaverForm_KeyPress, WindowMode: true);
                     screenSaverForms.Add(form);
+                    form.MainScreen = true;
                     Application.Run(form);
                 }
                 else    // Undefined argument
@@ -68,6 +69,7 @@ namespace Aerial
                 {
                     ScreenSaverForm form = new ScreenSaverForm(ScreenSaverForm_KeyPress, WindowMode: true);
                     screenSaverForms.Add(form);
+                    form.MainScreen = true;
                     Application.Run(form);
                 }
                 else // No arguments - treat like /c
@@ -89,10 +91,20 @@ namespace Aerial
                 case RegSettings.MultiMonitorModeEnum.SameOnEach:
                 case RegSettings.MultiMonitorModeEnum.DifferentVideos:
                     {
-                        foreach (var screen in Screen.AllScreens)
+                        var allScreens = Screen.AllScreens;
+                        if (allScreens.Length < 1)
                         {
+                            throw new System.Exception("No screens found to display on");
+                        }
+                        for (var index = 0; index < allScreens.Length; index++)
+                        {
+                            var screen = allScreens[index];
                             ScreenSaverForm form = new ScreenSaverForm(screen.Bounds, shouldCache: screen.Primary, showVideo: true, keyPressEventHandler: ScreenSaverForm_KeyPress);
                             screenSaverForms.Add(form);
+                            if (index == 0)
+                            {
+                                form.MainScreen = true;
+                            }
                             form.Show();
                         }
                         break;
@@ -101,6 +113,7 @@ namespace Aerial
                     {
                         ScreenSaverForm form = new ScreenSaverForm(Screen.AllScreens.GetBounds(), shouldCache: true, showVideo: true, keyPressEventHandler: ScreenSaverForm_KeyPress);
                         screenSaverForms.Add(form);
+                        form.MainScreen = true;
                         form.Show();
                         break;
                     }
@@ -111,6 +124,7 @@ namespace Aerial
                         {
                             ScreenSaverForm form = new ScreenSaverForm(screen.Bounds, shouldCache: screen.Primary, showVideo: screen.Primary, keyPressEventHandler: ScreenSaverForm_KeyPress);
                             screenSaverForms.Add(form);
+                            form.MainScreen = true;
                             form.Show();
                         }
                         break;
@@ -124,7 +138,20 @@ namespace Aerial
             {
                 foreach (ScreenSaverForm form in screenSaverForms)
                 {
-                    form.SetNextVideo(true);
+                    if (form.MainScreen)
+                    {
+                        form.SetNextVideo(true);
+                    }
+                }
+            }
+            else if (e.KeyChar == 'm')
+            {
+                foreach (ScreenSaverForm form in screenSaverForms)
+                {
+                    if (!form.MainScreen)
+                    {
+                        form.SetNextVideo(true);
+                    }
                 }
             }
             else if (screenSaverForms.Count > 0 && screenSaverForms[0].ShouldExit())
