@@ -154,6 +154,13 @@ namespace Aerial
                     }
                 }
             }
+            else if (e.KeyChar == 'i')
+            {
+                foreach (ScreenSaverForm form in screenSaverForms)
+                {
+                    form.ShowInfo();
+                }
+            }
             else if (screenSaverForms.Count > 0 && screenSaverForms[0].ShouldExit())
             {
                 Application.Exit();

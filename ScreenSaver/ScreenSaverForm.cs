@@ -365,7 +365,10 @@ namespace ScreenSaver
 
                 //MessageBox.Show($"{Movies[currentVideoIndex].url}\n{Movies[currentVideoIndex].repeat}\n{repeated}\n{force}");
 
-                string url = Movies[currentVideoIndex].url;
+                Asset movie = Movies[currentVideoIndex];
+                string url = movie.url;
+
+                ShowInfo();
 
                 if (Caching.IsHit(url))
                 {
@@ -384,16 +387,24 @@ namespace ScreenSaver
                     }
                 }
 
-                if (Movies[currentVideoIndex].shouldRepeatFrom && repeated != 1)
+                if (movie.shouldRepeatFrom && repeated != 1)
                 {
                     //MessageBox.Show($"Current time: {player.Time}, setting to {Movies[currentVideoIndex].repeatFrom}");
-                    player.Time = Movies[currentVideoIndex].repeatFrom;
+                    player.Time = movie.repeatFrom;
                 }
 
                 //currentVideoIndex++;
                 //if (currentVideoIndex >= Movies.Count)
                 //    currentVideoIndex = 0;
             }
+        }
+
+        public void ShowInfo()
+        {
+            timerMovieLocation.Enabled = false;
+            labelMovieLocation.Text = Movies[currentVideoIndex].ShortName();
+            labelMovieLocation.Visible = true;
+            timerMovieLocation.Start();
         }
 
         private void player_PlayStateChange(object sender, EventArgs e)
@@ -475,6 +486,12 @@ namespace ScreenSaver
         private void player_VlcLibDirectoryNeeded(object sender, Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs e)
         {
             e.SetRelativeLibvlcDirectory();
+        }
+
+        private void timerMovieLocation_Tick(object sender, EventArgs e)
+        {
+            timerMovieLocation.Enabled = false;
+            labelMovieLocation.Visible = false;
         }
     }
 

@@ -31,10 +31,13 @@ namespace ScreenSaver
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(ScreenSaverForm));
             this.btnClose = new System.Windows.Forms.Button();
             this.btnSettings = new System.Windows.Forms.Button();
             this.player = new Vlc.DotNet.Forms.VlcControl();
+            this.labelMovieLocation = new System.Windows.Forms.Label();
+            this.timerMovieLocation = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.player)).BeginInit();
             this.SuspendLayout();
             // 
@@ -87,6 +90,24 @@ namespace ScreenSaver
             this.player.VlcMediaplayerOptions = null;
             this.player.VlcLibDirectoryNeeded += new System.EventHandler<Vlc.DotNet.Forms.VlcLibDirectoryNeededEventArgs>(this.player_VlcLibDirectoryNeeded);
             // 
+            // labelMovieLocation
+            // 
+            this.labelMovieLocation.AutoSize = true;
+            this.labelMovieLocation.BackColor = System.Drawing.Color.Black;
+            this.labelMovieLocation.Font = new System.Drawing.Font("Microsoft Sans Serif", 27.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
+            this.labelMovieLocation.ForeColor = System.Drawing.Color.White;
+            this.labelMovieLocation.Location = new System.Drawing.Point(117, 93);
+            this.labelMovieLocation.Name = "labelMovieLocation";
+            this.labelMovieLocation.Size = new System.Drawing.Size(339, 42);
+            this.labelMovieLocation.TabIndex = 5;
+            this.labelMovieLocation.Text = "labelMovieLocation";
+            this.labelMovieLocation.Visible = false;
+            // 
+            // timerMovieLocation
+            // 
+            this.timerMovieLocation.Interval = 5000;
+            this.timerMovieLocation.Tick += new System.EventHandler(this.timerMovieLocation_Tick);
+            // 
             // ScreenSaverForm
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
@@ -94,6 +115,7 @@ namespace ScreenSaver
             this.BackColor = System.Drawing.Color.Black;
             this.BackgroundImageLayout = System.Windows.Forms.ImageLayout.None;
             this.ClientSize = new System.Drawing.Size(960, 540);
+            this.Controls.Add(this.labelMovieLocation);
             this.Controls.Add(this.btnClose);
             this.Controls.Add(this.btnSettings);
             this.Controls.Add(this.player);
@@ -106,6 +128,7 @@ namespace ScreenSaver
             this.Shown += new System.EventHandler(this.ScreenSaverForm_Shown);
             ((System.ComponentModel.ISupportInitialize)(this.player)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -113,6 +136,8 @@ namespace ScreenSaver
         private System.Windows.Forms.Button btnClose;
         private System.Windows.Forms.Button btnSettings;
         private Vlc.DotNet.Forms.VlcControl player;
+        private System.Windows.Forms.Label labelMovieLocation;
+        private System.Windows.Forms.Timer timerMovieLocation;
     }
 }
 

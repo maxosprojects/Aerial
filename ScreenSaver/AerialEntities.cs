@@ -154,7 +154,8 @@ namespace Aerial
         }
         public string ShortName()
         {
-            return accessibilityLabel + " — " + timeOfDay;
+            //return accessibilityLabel + " — " + timeOfDay;
+            return accessibilityLabel;
         }
         public string ToFullName()
         {
